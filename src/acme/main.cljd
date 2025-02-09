@@ -1,0 +1,60 @@
+(ns acme.main
+  (:require ["package:flutter/material.dart" :as m]
+            [cljd.flutter :as f]))
+
+(defn create-theme []
+  (m/ThemeData .primarySwatch m.Colors/pink))
+
+(defn create-title-text [counter]
+  (m/Text (str "Counter: " counter)))
+
+(defn create-app-bar [counter]
+  (m/AppBar
+   .title (create-title-text counter)))
+
+(defn create-main-text []
+  (m/Text "Let's get coding\n ...щось without me!"
+          .textAlign m.TextAlign/center
+          .style (m/TextStyle
+                  .color m.Colors/red
+                  .fontSize 32.0
+                  .height 1.2
+                  .overflow m.TextOverflow/ellipsis)))
+
+(defn create-ok-button [!counter]
+  (m/SizedBox
+   .width 200.0
+   .child
+   (m/ElevatedButton
+    .onPressed #(swap! !counter inc)
+    .style (m/ElevatedButton.styleFrom
+            .backgroundColor m.Colors/green)
+    .child (m/Text "OK"
+                   .style (m/TextStyle
+                           .fontSize 24.0
+                           .color m.Colors/white)))))
+
+(defn create-content [!counter]
+  (m/Center
+   .child
+   (m/Column
+    .mainAxisAlignment m.MainAxisAlignment/center
+    .children
+    [(create-main-text)
+     (m/SizedBox .height 30.0)
+     (create-ok-button !counter)])))
+
+(defn create-scaffold [counter !counter]
+  (m/Scaffold
+   .appBar (create-app-bar counter)
+   .body (create-content !counter)))
+
+(defn main []
+  (f/run
+   (f/widget
+    :let [!counter (atom 0)]
+    :watch [counter !counter]
+    (m/MaterialApp
+     .title "Welcome to Flutter"
+     .theme (create-theme)
+     .home (create-scaffold counter !counter)))))
